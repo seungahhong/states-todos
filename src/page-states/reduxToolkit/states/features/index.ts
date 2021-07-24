@@ -32,30 +32,43 @@ export const deleteTodoAction = createAction(DELETE_TODO, (id: number) => ({ pay
 export const fetchAsyncTodoAction = createAsyncThunk(FETCH_ASYNC_TODO, async (args: number | undefined, thunkAPI) => {
   const { data: todoItem } = await fetchTodo(args);
 
-  const { dispatch } = thunkAPI;
-  dispatch(fetchTodoAction(Array.isArray(todoItem) ? todoItem : [].concat(todoItem)));
+  // const { dispatch } = thunkAPI;
+  // dispatch(fetchTodoAction(Array.isArray(todoItem) ? todoItem : [].concat(todoItem)));
+  return {
+    todoItem: Array.isArray(todoItem) ? todoItem : [].concat(todoItem),
+  };
 });
 
 export const createAsyncTodoAction = createAsyncThunk(CREATE_ASYNC_TODO, async (args: TodoItemState, thunkAPI) => {
   const { data: todoItem } = await createTodo(args);
 
-  const { dispatch } = thunkAPI;
-  dispatch(createTodoAction(todoItem));
+  // const { dispatch } = thunkAPI;
+  // dispatch(createTodoAction(todoItem));
+  return { 
+    todoItem,
+  };
 });
 
 export const updateAsyncTodoAction = createAsyncThunk(UPDATE_ASYNC_TODO, async (args: { id: number, todoItem: TodoItemState }, thunkAPI) => {
   const { id, todoItem } = args;
   const { data } = await updateTodo(id, todoItem);
 
-  const { dispatch } = thunkAPI;
-  dispatch(updateTodoAction(id, data));
+  // const { dispatch } = thunkAPI;
+  // dispatch(updateTodoAction(id, data));
+  return {
+    id,
+    data,
+  };
 });
 
 export const deleteAsyncTodoAction = createAsyncThunk(DELETE_ASYNC_TODO, async (args: number, thunkAPI) => {
   await deleteTodo(args);
 
-  const { dispatch } = thunkAPI;
-  dispatch(deleteTodoAction(args));
+  // const { dispatch } = thunkAPI;
+  // dispatch(deleteTodoAction(args));
+  return {
+    id: args,
+  };
 });
 
 // reducer, immer 내장
@@ -73,11 +86,12 @@ const loadingReducerCb = (state: TodoState, action: TodoAction) => {
   };
 };
 
-const fulfilledReducerCb = (state: TodoState, action: TodoAction) => {
+const fulfilledReducerCb = (state: TodoState, todoItem: TodoItemState[]) => {
   // 성공
   return {
     ...state,
     loading: false,
+    todoItem,
     message: '성공했습니다...',
   };
 };
@@ -126,10 +140,10 @@ const counter = createSlice({
     [updateAsyncTodoAction.pending.type]: loadingReducerCb,
     [deleteAsyncTodoAction.pending.type]: loadingReducerCb,
 
-    [fetchAsyncTodoAction.fulfilled.type]: fulfilledReducerCb,
-    [createAsyncTodoAction.fulfilled.type]: fulfilledReducerCb,
-    [updateAsyncTodoAction.fulfilled.type]: fulfilledReducerCb,
-    [deleteAsyncTodoAction.fulfilled.type]: fulfilledReducerCb,
+    [fetchAsyncTodoAction.fulfilled.type]: (state, action) => fulfilledReducerCb(state,  action.payload.todoItem),
+    [createAsyncTodoAction.fulfilled.type]: (state, action) => fulfilledReducerCb(state, state.todoItem.concat(action.payload.todoItem)),
+    [updateAsyncTodoAction.fulfilled.type]: (state, action) => fulfilledReducerCb(state, state.todoItem.map(todo => todo.id !== action.payload.id ? todo : action.payload.data)),
+    [deleteAsyncTodoAction.fulfilled.type]: (state, action) => fulfilledReducerCb(state, state.todoItem.filter(todo => todo.id !== action.payload.id)),
 
     [fetchAsyncTodoAction.rejected.type]: rejectedReducerCb,
     [createAsyncTodoAction.rejected.type]: rejectedReducerCb,

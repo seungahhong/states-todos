@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Route, Switch } from 'react-router-dom';
-import RootContainer from '../src/pages/reduxToolkit/containers/RootContainer';
+import RootContainer from '../src/page-states/reduxToolkit/containers/RootContainer';
 import './App.css';
 
 function App() {
