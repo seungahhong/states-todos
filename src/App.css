@@ -1,0 +1,12 @@
+.container {
+  display: flex;
+}
+
+.container .nav {
+  width: 130px;
+  margin-right: 10px;
+}
+
+.container .content {
+  flex: 1;
+}
