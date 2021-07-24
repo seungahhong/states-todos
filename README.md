@@ -10,13 +10,13 @@
 ## How To Use
 
 To clone and run this application, you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
-
+F
 ```bash
 # Clone this repository
-$ git clone https://github.com/seungahhong/todos.git
+$ git clone https://github.com/seungahhong/states-todos.git
 
 # Go into the repository
-$ cd todos
+$ cd states-todos
 
 # Install dependencies
 $ npm install
@@ -34,7 +34,7 @@ $ npm run start
 
 ## Download
 
-You can [download](https://github.com/seungahhong/todos) the latest installable version of todos for Windows.
+You can [download](https://github.com/seungahhong/states-todos) the latest installable version of states-todos for Windows.
 
 ## Emailware
 
