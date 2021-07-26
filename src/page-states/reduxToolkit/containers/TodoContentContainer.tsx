@@ -63,7 +63,7 @@ const TodoContentContainer = (props: RootState) => {
         loading ? <ReactLoading color={'#00b2b2'} height={50} width={50} /> : <h1>{message}</h1>
       }
       <div>
-        <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodosAction}>Todos Loading</button>
+        <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodosAction}>Todos All Loading</button>
       </div>
       <hr 
         style={{
@@ -73,7 +73,7 @@ const TodoContentContainer = (props: RootState) => {
       />
       <label>Todo Fetch : </label><input type="number" value={fetchNumber} onChange={onFetchChange} />
       <div>
-        <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodoAction}>Todos Loading</button>
+        <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodoAction}>Todo Loading</button>
       </div>
       <hr 
         style={{

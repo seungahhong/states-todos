@@ -1,9 +1,8 @@
 import React, { Suspense } from 'react';
-import { Provider } from 'react-redux';
+import { RecoilRoot } from 'recoil';
 import { ErrorBoundary } from 'react-error-boundary';
+import ReactLoading from 'react-loading';
 import TodoContentContainer from './TodoContentContainer';
-
-import store from "../states/store";
 
 interface FallbackProps {
   error: Error;
@@ -23,9 +22,11 @@ const ErrorFallback = ({error, resetErrorBoundary}: FallbackProps) => {
 function RootContainer() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <Provider store={store}>
-        <TodoContentContainer />
-      </Provider>
+      <Suspense fallback={<ReactLoading color={'#00b2b2'} height={50} width={50} />}>
+        <RecoilRoot>
+          <TodoContentContainer />
+        </RecoilRoot>
+      </Suspense>
     </ErrorBoundary>
   );
 }
