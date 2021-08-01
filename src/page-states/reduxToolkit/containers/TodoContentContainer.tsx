@@ -60,7 +60,7 @@ const TodoContentContainer = (props: RootState) => {
   return (
     <>
       {
-        loading ? <ReactLoading color={'#00b2b2'} height={50} width={50} /> : <h1>{message}</h1>
+        loading && <ReactLoading color={'#00b2b2'} height={50} width={50} />
       }
       <div>
         <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodosAction}>Todos All Loading</button>

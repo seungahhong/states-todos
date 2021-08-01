@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { Provider } from 'react-redux';
 import { ErrorBoundary } from 'react-error-boundary';
 import TodoContentContainer from './TodoContentContainer';

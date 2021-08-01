@@ -1,27 +1,103 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import ReactLoading from 'react-loading';
-import {  TodoItemAtom, fetchAsyncTodoAction } from '../states/atoms';
-
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  TodoItemAtom,
+  fetchAsyncTodoAction,
+  createAsyncTodoAction,
+  deleteAsyncTodoAction,
+  filteredTodoListState,
+  todoListFilterState,
+  updateAsyncTodoAction,
+} from '../states/atoms';
 import TodosContentItemComponent from "../components/TodosContentItemComponent";
+import {
+  FETCH_TODOS,
+  FETCH_TODO,
+  CREATE_TODO,
+  UPDATE_TODO,
+  DELETE_TODO,
+} from "../states/constants";
 
 const TodoContentContainer = () => {
-  const [{ todoItem, loading, message }, setTodoItemAtom] = useRecoilState(TodoItemAtom);
-  const fetchTodo = useRecoilValue(fetchAsyncTodoAction(undefined));
+  const [{ data: todoItems }, setTodoItemAtom] = useRecoilState(TodoItemAtom);
+  const [ filter, setTodoFilter ] = useRecoilState(todoListFilterState);
+  const filterItems = useRecoilValue(filteredTodoListState);
 
+  const fetchTodoAction = useSetRecoilState(fetchAsyncTodoAction);
+  const createTodoAction = useSetRecoilState(createAsyncTodoAction);
+  const updateTodoAction = useSetRecoilState(updateAsyncTodoAction);
+  const deleteTodoAction = useSetRecoilState(deleteAsyncTodoAction);
+  
   const [ fetchNumber, setFetchNumber ] = useState(1);
   const [ updateNumber, setUpdateNumber ] = useState(1);
   const [ deleteNumber, setDeleteNumber ] = useState(1);
 
   useEffect(() => {
-    setTodoItemAtom(prev => ({
-      ...prev,
-      todoItem: fetchTodo,
-    }));
-  }, []);
+    switch(filter) {
+      case FETCH_TODOS:
+      case FETCH_TODO:  
+        setTodoItemAtom((prev) => ({
+          ...prev,
+          data: filterItems,
+        }));
+        break;
+      case CREATE_TODO:
+        setTodoItemAtom((prev) => ({
+          ...prev,
+          data: [...prev.data, ...filterItems],
+        }));
+        break;
+      case UPDATE_TODO:
+        setTodoItemAtom((prev) => ({
+          ...prev,
+          data: prev.data.map(todo => todo.id !== filterItems.id ? todo : filterItems.data),
+        }));
+        break;  
+      case DELETE_TODO:
+        setTodoItemAtom((prev) => ({
+          ...prev,
+          data: prev.data.filter((item) => item.id !== filterItems),
+        }));
+        break;  
+    }
+  }, [filterItems, setTodoItemAtom]);
 
-  // const handleFetchTodosAction = (event: React.MouseEvent<HTMLButtonElement>) => dispatch(fetchAsyncTodoAction());
-  // const handleFetchTodoAction = (evetn: React.MouseEvent<HTMLButtonElement>) => dispatch(fetchAsyncTodoAction(fetchNumber));
+  const handleFetchTodosAction = (evetn: React.MouseEvent<HTMLButtonElement>) => {
+    setTodoFilter('FETCH_TODOS');
+  };
+
+  const handleFetchTodoAction = (evetn: React.MouseEvent<HTMLButtonElement>) => {
+    fetchTodoAction(fetchNumber);
+    setTodoFilter('FETCH_TODO');
+  };
+
+  const handleCreateTodoAction = (evetn: React.MouseEvent<HTMLButtonElement>) => {
+    createTodoAction({
+      userId: 2,
+      title: 'create',
+      completed: false,
+    })
+    setTodoFilter('CREATE_TODO');
+  };
+
+  const handleUpdateTodoAction = (evetn: React.MouseEvent<HTMLButtonElement>) => {
+    updateTodoAction({
+      id: updateNumber,
+      todoItem: {
+        id: updateNumber,
+        userId: updateNumber,
+        title: 'update',
+        completed: false,
+      },
+    })
+    setTodoFilter('UPDATE_TODO');
+  };
+
+  const handleDeleteTodoAction = (evetn: React.MouseEvent<HTMLButtonElement>) => {
+    deleteTodoAction(deleteNumber);
+    setTodoFilter('DELETE_TODO');
+  };
+
   // const handleCreateTodoAction = (event: React.MouseEvent<HTMLButtonElement>) => dispatch(createAsyncTodoAction({
   //   'userId': 2,
   //   'title': 'create',
@@ -55,11 +131,8 @@ const TodoContentContainer = () => {
 
   return (
     <>
-      {
-        loading ? <ReactLoading color={'#00b2b2'} height={50} width={50} /> : <h1>{message}</h1>
-      }
       <div>
-        <button style={{ background: '#e7f9f9' }} >Todos All Loading</button>
+        <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodosAction}>Todos All Loading</button>
       </div>
       <hr 
         style={{
@@ -69,7 +142,7 @@ const TodoContentContainer = () => {
       />
       <label>Todo Fetch : </label><input type="number" value={fetchNumber} onChange={onFetchChange} />
       <div>
-        <button style={{ background: '#e7f9f9' }}>Todo Loading</button>
+        <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodoAction}>Todo Loading</button>
       </div>
       <hr 
         style={{
@@ -78,7 +151,7 @@ const TodoContentContainer = () => {
         }}
       />
       <div>
-        <button style={{ background: '#e7f9f9' }}>Create Todo</button>
+        <button style={{ background: '#e7f9f9' }} onClick={handleCreateTodoAction}>Create Todo</button>
       </div>
       <hr 
         style={{
@@ -88,7 +161,7 @@ const TodoContentContainer = () => {
       />
       <label>Todo Update : </label><input type="number" value={updateNumber} onChange={onUpdateChange} />
       <div>
-        <button style={{ background: '#e7f9f9' }}>Update Todo</button>
+        <button style={{ background: '#e7f9f9' }} onClick={handleUpdateTodoAction}>Update Todo</button>
       </div>
       <hr 
         style={{
@@ -98,10 +171,10 @@ const TodoContentContainer = () => {
       />
       <label>Todo Delete : </label><input type="number" value={deleteNumber} onChange={onDeleteChange} />
       <div>
-        <button style={{ background: '#e7f9f9' }}>Delete Todo</button>
+        <button style={{ background: '#e7f9f9' }} onClick={handleDeleteTodoAction}>Delete Todo</button>
       </div>
       {
-        (!loading && todoItem) && todoItem.map(
+        todoItems && todoItems.map(
           todo => 
             <TodosContentItemComponent
               key={todo.id}

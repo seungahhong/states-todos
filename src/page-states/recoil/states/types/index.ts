@@ -1,7 +1,7 @@
 import { TodoItem } from '../../types';
 
 export interface TodoState {
-  todoItem: TodoItemState[],
+  data: TodoItemState[],
   loading: boolean,
   message: string,
 }
