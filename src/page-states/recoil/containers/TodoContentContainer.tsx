@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilCallback, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   TodoItemAtom,
   fetchAsyncTodoAction,
@@ -17,6 +17,7 @@ import {
   UPDATE_TODO,
   DELETE_TODO,
 } from "../states/constants";
+import { TodoItem } from "../types";
 
 const TodoContentContainer = () => {
   const [{ data: todoItems }, setTodoItemAtom] = useRecoilState(TodoItemAtom);
@@ -62,16 +63,25 @@ const TodoContentContainer = () => {
     }
   }, [filterItems, setTodoItemAtom]);
 
-  const handleFetchTodosAction = (evetn: React.MouseEvent<HTMLButtonElement>) => {
+  const handleFetchTodosAction = (event: React.MouseEvent<HTMLButtonElement>) => {
     setTodoFilter('FETCH_TODOS');
   };
 
-  const handleFetchTodoAction = (evetn: React.MouseEvent<HTMLButtonElement>) => {
+  const handleCallbackFetchTodoAction = useRecoilCallback(({snapshot, set}) => async () => {
+    const todos = await snapshot.getPromise(fetchAsyncTodoAction) as TodoItem[];
+
+    set(TodoItemAtom, (prev) => ({
+      ...prev,
+      data: todos,
+    }));
+  }, [fetchNumber, fetchAsyncTodoAction, TodoItemAtom, fetchTodoAction]);
+
+  const handleFetchTodoAction = (event: React.MouseEvent<HTMLButtonElement>) => {
     fetchTodoAction(fetchNumber);
     setTodoFilter('FETCH_TODO');
   };
 
-  const handleCreateTodoAction = (evetn: React.MouseEvent<HTMLButtonElement>) => {
+  const handleCreateTodoAction = (event: React.MouseEvent<HTMLButtonElement>) => {
     createTodoAction({
       userId: 2,
       title: 'create',
@@ -80,7 +90,7 @@ const TodoContentContainer = () => {
     setTodoFilter('CREATE_TODO');
   };
 
-  const handleUpdateTodoAction = (evetn: React.MouseEvent<HTMLButtonElement>) => {
+  const handleUpdateTodoAction = (event: React.MouseEvent<HTMLButtonElement>) => {
     updateTodoAction({
       id: updateNumber,
       todoItem: {
@@ -93,27 +103,11 @@ const TodoContentContainer = () => {
     setTodoFilter('UPDATE_TODO');
   };
 
-  const handleDeleteTodoAction = (evetn: React.MouseEvent<HTMLButtonElement>) => {
+  const handleDeleteTodoAction = (event: React.MouseEvent<HTMLButtonElement>) => {
     deleteTodoAction(deleteNumber);
     setTodoFilter('DELETE_TODO');
   };
 
-  // const handleCreateTodoAction = (event: React.MouseEvent<HTMLButtonElement>) => dispatch(createAsyncTodoAction({
-  //   'userId': 2,
-  //   'title': 'create',
-  //   'completed': false,
-  // }));
-  // const handleUpdateTodoAction = (event: React.MouseEvent<HTMLButtonElement>) => dispatch(updateAsyncTodoAction({
-  //   id: updateNumber,
-  //   todoItem: {
-  //     'id': updateNumber,
-  //     'userId': updateNumber,
-  //     'title': 'update',
-  //     'completed': false,
-  //   },
-  // }));
-  // const handleDeteleTodoAciton = (event: React.MouseEvent<HTMLButtonElement>) => dispatch(deleteAsyncTodoAction(deleteNumber));
-  
   const onFetchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { target } = e;
     setFetchNumber(Number(target.value));
@@ -141,6 +135,9 @@ const TodoContentContainer = () => {
         }}
       />
       <label>Todo Fetch : </label><input type="number" value={fetchNumber} onChange={onFetchChange} />
+      <div>
+        <button style={{ background: '#e7f9f9' }} onClick={handleCallbackFetchTodoAction}>Todo Callback Loading</button>
+      </div>
       <div>
         <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodoAction}>Todo Loading</button>
       </div>
