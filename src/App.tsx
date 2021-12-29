@@ -1,7 +1,9 @@
 import React from 'react';
 import { NavLink, Route, Switch } from 'react-router-dom';
-import ReduxToolKitContainer from '../src/page-states/reduxToolkit/containers/RootContainer';
-import RecoidContainer from '../src/page-states/recoil/containers/RootContainer';
+import ReduxToolKitContainer from '../src/reduxToolkit/containers/RootContainer';
+import RecoilContainer from '../src/recoil/containers/RootContainer';
+import ReactQueryContainer from '../src/react-query/containers/RootContainer';
+import SWRContainer from '../src/swr/containers/RootContainer';
 import './App.css';
 
 function App() {
@@ -14,11 +16,19 @@ function App() {
         <div>
           <NavLink to="recoil">recoil</NavLink>
         </div>
+        <div>
+          <NavLink to="react-query">react-query</NavLink>
+        </div>
+        <div>
+          <NavLink to="swr">swr</NavLink>
+        </div>
       </div>
       <div className="content">
         <Switch>
           <Route path="/reduxToolkit" component={ReduxToolKitContainer} />
-          <Route path="/recoil" component={RecoidContainer} />
+          <Route path="/recoil" component={RecoilContainer} />
+          <Route path="/react-query" component={ReactQueryContainer} />
+          <Route path="/swr" component={SWRContainer} />
         </Switch>
       </div>
     </div>
