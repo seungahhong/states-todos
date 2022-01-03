@@ -8,6 +8,10 @@
   margin-right: 10px;
 }
 
+.container .nav div {
+  margin-bottom: 10px;
+}
+
 .container .content {
   flex: 1;
 }

@@ -1,23 +1,26 @@
 import { createAction } from 'typesafe-actions';
 import { TodoItemState, TypedThunk } from '../store/types';
 import {
-  FETCH_TODO,
-  FETCH_ASYNC_TODO,
-  CREATE_TODO,
-  CREATE_ASYNC_TODO,
-  UPDATE_TODO,
-  UPDATE_ASYNC_TODO,
-  DELETE_TODO,
-  DELETE_ASYNC_TODO,
+  FETCH_TODO_REQUEST,
+  FETCH_TODO_SUCCESS,
+  FETCH_TODO_ERROR,
 } from '../../constants';
 import {
   fetchTodo,
 } from '../../services';
 
-export const fetchTodoAction = createAction(FETCH_TODO, (todoItem: TodoItemState[]) => ({ todoItem }))();
+export const fetchTodoActionSuccess = createAction(FETCH_TODO_SUCCESS, (todoItem: TodoItemState[]) => ({ todoItem }))();
+export const fetchTodoActionRequest = createAction(FETCH_TODO_REQUEST)();
+export const fetchTodoActionError = createAction(FETCH_TODO_ERROR, (error) => ({ error }))();
 
 export const fetchAsyncTodoAction = (args: number | undefined): TypedThunk => async (dispatch) =>  {
-  const { data: todoItem } = await fetchTodo(args);
-    
-  dispatch(fetchTodoAction(Array.isArray(todoItem) ? todoItem : [].concat(todoItem)));
+
+  try {
+    dispatch(fetchTodoActionRequest());
+
+    const { data: todoItem } = await fetchTodo(args);
+    dispatch(fetchTodoActionSuccess(Array.isArray(todoItem) ? todoItem : [].concat(todoItem)));
+  } catch(e) {
+    dispatch(fetchTodoActionError(e));
+  }
 };

@@ -1,5 +1,5 @@
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
-import { fetchTodoAction } from "../../actions";
+import { fetchTodoActionSuccess, fetchTodoActionRequest, fetchTodoActionError } from "../../actions";
 import { RootState, RootDispatch } from '../../store';
 import { TodoItem } from '../../../types';
 
@@ -13,7 +13,10 @@ export interface TodoState {
 export type TodoItemState = TodoItem;
 
 // actions
-export type TodoAction = ReturnType<typeof fetchTodoAction>;
+export type TodoAction = 
+  | ReturnType<typeof fetchTodoActionSuccess>
+  | ReturnType<typeof fetchTodoActionRequest>
+  | ReturnType<typeof fetchTodoActionError>;
 
 export type TypedThunk = ThunkAction<void, TodoState, unknown, TodoAction>;
 export type TypedThunkDispath = ThunkDispatch<TodoState, unknown, TodoAction>;

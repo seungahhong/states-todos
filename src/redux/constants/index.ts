@@ -1,5 +1,7 @@
 // action todo type
-export const FETCH_TODO = 'FETCH_TODO' as const;
+export const FETCH_TODO_REQUEST = 'FETCH_TODO' as const;
+export const FETCH_TODO_SUCCESS = 'FETCH_TODO_SUCCESS' as const;
+export const FETCH_TODO_ERROR = 'FETCH_TODO_ERROR' as const;
 export const FETCH_ASYNC_TODO = 'FETCH_ASYNC_TODO' as const;
 
 // action todo type
