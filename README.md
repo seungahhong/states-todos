@@ -11,6 +11,7 @@
 
 To clone and run this application, you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
 F
+
 ```bash
 # Clone this repository
 $ git clone https://github.com/seungahhong/states-todos.git
@@ -51,6 +52,10 @@ This software uses the following open source packages:
 - [node-sass](https://github.com/sass/node-sass)
 - [react](https://ko.reactjs.org/)
 - [redux-toolkit](https://redux-toolkit.js.org/)
+- [mobx](https://mobx.js.org/README.html)
+- [react-query](https://react-query.tanstack.com/)
+- [redux](https://redux.js.org/)
+- [swr](https://swr.vercel.app/ko)
 - [typescript](https://www.typescriptlang.org/)
 - [axios](https://github.com/axios/axios)
 - [jest](https://jestjs.io/)
