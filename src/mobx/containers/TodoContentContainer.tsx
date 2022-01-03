@@ -47,7 +47,7 @@ class TodoContentContainer extends React.Component<TodoStoreProps, TodoStoreStat
   };
   
   handleFetchTodoAction = (event: React.MouseEvent<HTMLButtonElement>) => {
-    this.todosStore.fetchAsyncRunInActionTodoAction(this.state.fetchNumber);
+    this.todosStore.fetchAsyncFlowTodoAction(this.state.fetchNumber);
   };
 
   render() {

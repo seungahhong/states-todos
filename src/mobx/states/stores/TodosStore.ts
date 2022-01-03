@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { makeObservable, observable, action, runInAction } from "mobx";
+import { makeObservable, observable, action, runInAction, flow } from "mobx";
 import {
   fetchTodo,
 } from '../../services';
@@ -67,14 +67,28 @@ class TodosStore {
         this.store.message = '성공했습니다...';
       });
 
-    } catch {
+    } catch(e) {
+      runInAction(() => {
+        this.store.loading = false;
+        this.store.message = '실패했습니다...';
+      });
+    }
+  }
+
+  @flow
+  *fetchAsyncFlowTodoAction(args: number | undefined) {
+    try {
+      this.store.loading = true;
+      const res: AxiosResponse<TodoItemState[]> = yield fetchTodo(args);
+
+      const { data : todoItem } = res;
+      this.store.loading = false;
+      this.store.todoItem = Array.isArray(todoItem) ? todoItem : ([] as TodoItemState[]).concat(todoItem);
+      this.store.message = '성공했습니다...';
+    } catch(e) {
       this.store.loading = false;
       this.store.message = '실패했습니다...';
     }
-    return fetchTodo(args).then(
-      this.fetchTodoSuccess.bind(this),
-      this.fetchTodoError.bind(this),
-    )
   }
 }
 
