@@ -51,7 +51,7 @@ class TodoContentContainer extends React.Component<TodoStoreProps, TodoStoreStat
   };
 
   render() {
-    const { store: todosStore } = this.props.store!;
+    const { store: todosStore, getTodoItemLengthState: todoLength } = this.props.store!;
     const { fetchNumber } = this.state;
 
     return (
@@ -59,6 +59,7 @@ class TodoContentContainer extends React.Component<TodoStoreProps, TodoStoreStat
         {
           todosStore.loading && <ReactLoading color={'#00b2b2'} height={50} width={50} />
         }
+        <div>길이: {todoLength}</div>
         <div>
           <button style={{ background: '#e7f9f9' }} onClick={this.handleFetchTodosAction}>Todos All Loading</button>
         </div>

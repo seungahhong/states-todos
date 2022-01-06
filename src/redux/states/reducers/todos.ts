@@ -6,7 +6,6 @@ import {
   FETCH_TODO_SUCCESS,
   FETCH_TODO_ERROR,
 } from '../../constants';
-import { getTodoItem } from '../selectors';
 import { TodoState, TodoAction } from '../store/types';
 
 const initialState: TodoState = {

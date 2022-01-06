@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { makeObservable, observable, action, runInAction, flow } from "mobx";
+import { makeObservable, observable, action, runInAction, flow, computed } from "mobx";
 import {
   fetchTodo,
 } from '../../services';
@@ -89,6 +89,11 @@ class TodosStore {
       this.store.loading = false;
       this.store.message = '실패했습니다...';
     }
+  }
+
+  @computed
+  get getTodoItemLengthState() {
+    return this.store.todoItem.length;
   }
 }
 

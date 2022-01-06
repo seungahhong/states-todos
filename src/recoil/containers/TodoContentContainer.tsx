@@ -8,6 +8,7 @@ import {
   filteredTodoListState,
   todoListFilterState,
   updateAsyncTodoAction,
+  todoItemLengthState,
 } from '../states/atoms';
 import TodosContentItemComponent from "../components/TodosContentItemComponent";
 import {
@@ -28,6 +29,8 @@ const TodoContentContainer = () => {
   const createTodoAction = useSetRecoilState(createAsyncTodoAction);
   const updateTodoAction = useSetRecoilState(updateAsyncTodoAction);
   const deleteTodoAction = useSetRecoilState(deleteAsyncTodoAction);
+
+  const todoLength = useRecoilValue(todoItemLengthState);
   
   const [ fetchNumber, setFetchNumber ] = useState(1);
   const [ updateNumber, setUpdateNumber ] = useState(1);
@@ -125,6 +128,7 @@ const TodoContentContainer = () => {
 
   return (
     <>
+      <div>길이: {todoLength}</div>
       <div>
         <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodosAction}>Todos All Loading</button>
       </div>
@@ -136,10 +140,10 @@ const TodoContentContainer = () => {
       />
       <label>Todo Fetch : </label><input type="number" value={fetchNumber} onChange={onFetchChange} />
       <div>
-        <button style={{ background: '#e7f9f9' }} onClick={handleCallbackFetchTodoAction}>Todo Callback Loading</button>
+        <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodoAction}>Todo Loading</button>
       </div>
       <div>
-        <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodoAction}>Todo Loading</button>
+        <button style={{ background: '#e7f9f9' }} onClick={handleCallbackFetchTodoAction}>Todo Callback Loading</button>
       </div>
       <hr 
         style={{

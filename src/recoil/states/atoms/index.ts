@@ -117,3 +117,11 @@ export const filteredTodoListState = selector<any>({
     },
 });
 
+export const todoItemLengthState = selector({
+    key: 'todoItemLengthState',
+    get: ({get}) => {
+      const todoList = get(TodoItemAtom);
+      return todoList.data.length;
+    },
+});
+  

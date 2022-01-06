@@ -1,7 +1,9 @@
 // ducks pattern 구조
 import {
+  Selector,
   createSlice, // handleActions 대체
   createAction,
+  createSelector,
   createAsyncThunk, // redux-thunk 수신 간소화
 } from "@reduxjs/toolkit";
 import {
@@ -20,7 +22,16 @@ import {
   deleteTodo,
   updateTodo,
 } from '../../services';
-import { TodoItemState, TodoState, TodoAction } from '../types';
+import { TodoItemState, TodoState, TodoAction, RootState } from '../types';
+
+/**
+ * createSelector
+ */
+const getTodo = (state: RootState) => state.todos;
+export const getTodoItemLengthState: Selector<RootState, number> = createSelector(
+  getTodo,
+  (state: TodoState) => state.todoItem.length,
+)
 
 // createActions이 없어서 createAction으로 대체
 export const fetchTodoAction = createAction(FETCH_TODO, (todoItem: TodoItemState[]) => ({ payload: { todoItem }}));

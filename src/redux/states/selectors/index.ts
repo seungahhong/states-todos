@@ -1,18 +1,13 @@
 import { Selector } from 'react-redux';
 import { createSelector } from 'reselect';
 
-import { TodoState } from '../store/types';
+import { TodoState, RootState } from '../store/types';
 
-export const getTodoItem = (state: TodoState) => state.todoItem;
-
-// export const getIncreaseNumber: Selector<TodoState, number> = createSelector(
-//   getNumber,
-//   getDiff,
-//   (number, diff) => number + diff,
-// );
-
-// export const getDecreaseNumber: Selector<TodoState, number> = createSelector(
-//   getNumber,
-//   getDiff,
-//   (number, diff) => number - diff,
-// );
+/**
+ * createSelector
+ */
+const getTodo = (state: RootState) => state.todos;
+export const getTodoItemLengthState: Selector<RootState, number> = createSelector(
+  getTodo,
+  (state: TodoState) => state.todoItem.length,
+);

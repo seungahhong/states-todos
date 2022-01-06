@@ -5,16 +5,19 @@ import ReactLoading from 'react-loading';
 import TodosContentItemComponent from "../components/TodosContentItemComponent";
 import { TypedThunkDispath, RootState, RootDispatch, TodoState } from '../states/store/types';
 import { fetchAsyncTodoAction } from "../states/actions";
+import { getTodoItemLengthState } from "../states/selectors";
 
 const TodoContentContainer = (props: RootState) => {
-  const { todoItem, loading, message } : TodoState = useSelector(
-    ( state: RootState ) => ({
-      todoItem: props.todos.todoItem,
-      loading: props.todos.loading,
-      message: props.todos.message,
-    }),
-    shallowEqual
-  );
+  // const { todoItem, loading, message } : TodoState = useSelector(
+  //   ( state: RootState ) => ({
+  //     todoItem: props.todos.todoItem,
+  //     loading: props.todos.loading,
+  //     message: props.todos.message,
+  //   }),
+  //   shallowEqual
+  // );
+  const { todoItem, loading, message }: TodoState = useSelector((state: RootState) => props.todos, shallowEqual);
+  const todoLength = useSelector(getTodoItemLengthState);
   const dispatch = useDispatch<RootDispatch>();
   const [ fetchNumber, setFetchNumber ] = useState(1);
   const [ updateNumber, setUpdateNumber ] = useState(1);
@@ -62,6 +65,7 @@ const TodoContentContainer = (props: RootState) => {
       {
         loading && <ReactLoading color={'#00b2b2'} height={50} width={50} />
       }
+      <div>길이: {todoLength}</div>
       <div>
         <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodosAction}>Todos All Loading</button>
       </div>
