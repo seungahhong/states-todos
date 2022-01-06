@@ -90,7 +90,7 @@ const TodoContentContainer = () => {
 
   return (
     <>
-      {/* <div>길이: {todoLength}</div> */}
+      <div>길이: {todosData?.todoLength}</div>
       <div>
         <button
           style={{ background: "#e7f9f9" }}
