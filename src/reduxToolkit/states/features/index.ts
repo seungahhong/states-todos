@@ -1,5 +1,6 @@
 // ducks pattern 구조
 import {
+  Draft,
   Selector,
   createSlice, // handleActions 대체
   createAction,
@@ -55,7 +56,7 @@ export const createAsyncTodoAction = createAsyncThunk(CREATE_ASYNC_TODO, async (
 
   // const { dispatch } = thunkAPI;
   // dispatch(createTodoAction(todoItem));
-  return { 
+  return {
     todoItem,
   };
 });
@@ -64,8 +65,8 @@ export const updateAsyncTodoAction = createAsyncThunk(UPDATE_ASYNC_TODO, async (
   const { id, todoItem } = args;
   const { data } = await updateTodo(id, todoItem);
 
-  // const { dispatch } = thunkAPI;
   // dispatch(updateTodoAction(id, data));
+
   return {
     id,
     data,
@@ -73,13 +74,18 @@ export const updateAsyncTodoAction = createAsyncThunk(UPDATE_ASYNC_TODO, async (
 });
 
 export const deleteAsyncTodoAction = createAsyncThunk(DELETE_ASYNC_TODO, async (args: number, thunkAPI) => {
-  await deleteTodo(args);
+  try {
+    await deleteTodo(args);
 
-  // const { dispatch } = thunkAPI;
-  // dispatch(deleteTodoAction(args));
-  return {
-    id: args,
-  };
+    // const { dispatch } = thunkAPI;
+    // dispatch(deleteTodoAction(args));
+    return {
+      id: args,
+    };
+  } catch (error) {
+    const { rejectWithValue } = thunkAPI;
+    return rejectWithValue(error);
+  }
 });
 
 // reducer, immer 내장
@@ -89,31 +95,24 @@ const initialState: TodoState = {
   message: '',
 };
 
-const loadingReducerCb = (state: TodoState, action: TodoAction) => {
+const loadingReducerCb = (state: Draft<TodoState>) => {
   // 호출전
-  return {
-    ...state,
-    loading: true,
-  };
+  state.loading = true;
+  state.message = '';
 };
 
-const fulfilledReducerCb = (state: TodoState, todoItem: TodoItemState[]) => {
+const fulfilledReducerCb = (state: Draft<TodoState>, todoItem: TodoItemState[]) => {
   // 성공
-  return {
-    ...state,
-    loading: false,
-    todoItem,
-    message: '성공했습니다...',
-  };
+  state.loading = false;
+  state.todoItem = todoItem;
+  state.message = '성공했습니다...';
 };
 
-const rejectedReducerCb = (state: TodoState, action: TodoAction) => {
+const rejectedReducerCb = (state: Draft<TodoState>) => {
   // 실패
-  return {
-    ...state,
-    loading: false,
-    message: '실패했습니다...',
-  };
+  state.loading = false;
+  state.todoItem = [];
+  state.message = '실패했습니다...';
 };
 
 // redux-actions handleActions 내장
@@ -122,29 +121,17 @@ const counter = createSlice({
   initialState,
   reducers: { }, // key값으로 정의한 이름으로 자동으로 액션함수 생성
   extraReducers: { // 사용자가 정의한 이름의 액션함수가 생성
-    [FETCH_TODO]: (state, action) => {
-      return {
-        ...state,
-        todoItem: action.payload.todoItem,
-      };
+    [FETCH_TODO]: (state: Draft<TodoState>, action) => {
+      state.todoItem = action.payload.todoItem;
     },
-    [CREATE_TODO]: (state, action) => {
-      return {
-        ...state,
-        todoItem: state.todoItem.concat(action.payload.todoItem),
-      };
+    [CREATE_TODO]: (state: Draft<TodoState>, action) => {
+      state.todoItem = state.todoItem.concat(action.payload.todoItem);
     },
-    [UPDATE_TODO]: (state, action) => {
-      return {
-        ...state,
-        todoItem: state.todoItem.map(todo => todo.id !== action.payload.todoItem.id ? todo : action.payload.todoItem),
-      };
+    [UPDATE_TODO]: (state: Draft<TodoState>, action) => {
+      state.todoItem = state.todoItem.map(todo => todo.id !== action.payload.todoItem.id ? todo : action.payload.todoItem);
     },
-    [DELETE_TODO]: (state, action) => {
-      return {
-        ...state,
-        todoItem: state.todoItem.filter(todo => todo.id !== action.payload),
-      };
+    [DELETE_TODO]: (state: Draft<TodoState>, action) => {
+      state.todoItem = state.todoItem.filter(todo => todo.id !== action.payload);
     },
     [fetchAsyncTodoAction.pending.type]: loadingReducerCb,
     [createAsyncTodoAction.pending.type]: loadingReducerCb,
