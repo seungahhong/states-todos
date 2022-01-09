@@ -5,7 +5,8 @@ import {
   createSlice, // handleActions 대체
   createAction,
   createSelector,
-  createAsyncThunk, // redux-thunk 수신 간소화
+  createAsyncThunk,  // redux-thunk 수신 간소화
+  PayloadAction,
 } from "@reduxjs/toolkit";
 import {
   FETCH_TODO,
@@ -16,6 +17,9 @@ import {
   UPDATE_ASYNC_TODO,
   DELETE_TODO,
   DELETE_ASYNC_TODO,
+  FETCH_TODO_SAGA,
+  FETCH_TODO_SAGA_SUCCESS,
+  FETCH_TODO_SAGA_ERROR,
 } from '../constants';
 import {
   fetchTodo,
@@ -23,7 +27,9 @@ import {
   deleteTodo,
   updateTodo,
 } from '../../services';
-import { TodoItemState, TodoState, TodoAction, RootState } from '../types';
+import { TodoItemState, TodoState, RootState } from '../types';
+import { AxiosError } from "axios";
+import { createAsyncAction } from "typesafe-actions";
 
 /**
  * createSelector
@@ -39,6 +45,13 @@ export const fetchTodoAction = createAction(FETCH_TODO, (todoItem: TodoItemState
 export const createTodoAction = createAction(CREATE_TODO, (todoItem: TodoItemState[]) => ({ payload: { todoItem }}));
 export const updateTodoAction = createAction(UPDATE_TODO, (id: number, todoItem: TodoItemState[]) => ({ payload: { id, todoItem }}));
 export const deleteTodoAction = createAction(DELETE_TODO, (id: number) => ({ payload: id }));
+
+// redux-saga 호출을 위한 action 함수 지정
+export const fetchTodoSagaAsyncAction = createAsyncAction(
+  FETCH_TODO_SAGA,
+  FETCH_TODO_SAGA_SUCCESS,
+  FETCH_TODO_SAGA_ERROR
+)<undefined | number, TodoItemState[], AxiosError>();
 
 // createActions이 없어서 createAction으로 대체
 export const fetchAsyncTodoAction = createAsyncThunk(FETCH_ASYNC_TODO, async (args: number | undefined, thunkAPI) => {
@@ -116,11 +129,25 @@ const rejectedReducerCb = (state: Draft<TodoState>) => {
 };
 
 // redux-actions handleActions 내장
-const counter = createSlice({
+const todos = createSlice({
   name: 'todos',
   initialState,
   reducers: { }, // key값으로 정의한 이름으로 자동으로 액션함수 생성
   extraReducers: { // 사용자가 정의한 이름의 액션함수가 생성
+    [FETCH_TODO_SAGA]: (state: Draft<TodoState>) => {
+      state.loading = true;
+      state.message = '';
+    },
+    [FETCH_TODO_SAGA_SUCCESS]: (state: Draft<TodoState>, action: PayloadAction<TodoItemState[]>) => {
+      state.loading = false;
+      state.todoItem = action.payload;
+      state.message = '성공했습니다...';
+    },
+    [FETCH_TODO_SAGA_ERROR]: (state: Draft<TodoState>, error: AxiosError) => {
+      state.loading = false;
+      state.todoItem = [];
+      state.message = '실패했습니다...';
+    },
     [FETCH_TODO]: (state: Draft<TodoState>, action) => {
       state.todoItem = action.payload.todoItem;
     },
@@ -150,4 +177,4 @@ const counter = createSlice({
   },
 });
 
-export default counter.reducer;
+export default todos.reducer;

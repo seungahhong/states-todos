@@ -4,7 +4,14 @@ import ReactLoading from 'react-loading';
 
 import TodosContentItemComponent from "../components/TodosContentItemComponent";
 import { TypedThunkDispath, RootState, RootDispatch, TodoState } from '../states/types';
-import { createAsyncTodoAction, deleteAsyncTodoAction, fetchAsyncTodoAction, getTodoItemLengthState, updateAsyncTodoAction } from "../states/features";
+import {
+  createAsyncTodoAction,
+  deleteAsyncTodoAction,
+  fetchAsyncTodoAction,
+  fetchTodoSagaAsyncAction,
+  getTodoItemLengthState,
+  updateAsyncTodoAction,
+} from "../states/features";
 
 const TodoContentContainer = (props: RootState) => {
   // const { todoItem, loading, message } : TodoState = useSelector(
@@ -26,6 +33,8 @@ const TodoContentContainer = (props: RootState) => {
     (dispatch as TypedThunkDispath)(fetchAsyncTodoAction());
   }, [dispatch]);
 
+  const handleFetchTodosSagaAction = (event: React.MouseEvent<HTMLButtonElement>) => dispatch(fetchTodoSagaAsyncAction.request(undefined));
+  const handleFetchTodoSagaAction = (event: React.MouseEvent<HTMLButtonElement>) => dispatch(fetchTodoSagaAsyncAction.request(fetchNumber));
   const handleFetchTodosAction = (event: React.MouseEvent<HTMLButtonElement>) => dispatch(fetchAsyncTodoAction());
   const handleFetchTodoAction = (evetn: React.MouseEvent<HTMLButtonElement>) => dispatch(fetchAsyncTodoAction(fetchNumber));
   const handleCreateTodoAction = (event: React.MouseEvent<HTMLButtonElement>) => dispatch(createAsyncTodoAction({
@@ -68,6 +77,9 @@ const TodoContentContainer = (props: RootState) => {
       <div>
         <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodosAction}>Todos All Loading</button>
       </div>
+      <div>
+        <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodosSagaAction}>Todos Saga All Loading</button>
+      </div>
       <hr 
         style={{
           margin: '3px',
@@ -77,6 +89,9 @@ const TodoContentContainer = (props: RootState) => {
       <label>Todo Fetch : </label><input type="number" value={fetchNumber} onChange={onFetchChange} />
       <div>
         <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodoAction}>Todo Loading</button>
+      </div>
+      <div>
+        <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodoSagaAction}>Todo Saga Loading</button>
       </div>
       <hr 
         style={{
