@@ -30,6 +30,7 @@ import {
 import { TodoItemState, TodoState, RootState } from '../types';
 import { AxiosError } from "axios";
 import { createAsyncAction } from "typesafe-actions";
+import { TodoItem } from "../../types";
 
 /**
  * createSelector
@@ -60,7 +61,7 @@ export const fetchAsyncTodoAction = createAsyncThunk(FETCH_ASYNC_TODO, async (ar
   // const { dispatch } = thunkAPI;
   // dispatch(fetchTodoAction(Array.isArray(todoItem) ? todoItem : [].concat(todoItem)));
   return {
-    todoItem: Array.isArray(todoItem) ? todoItem : [].concat(todoItem),
+    todoItem: Array.isArray(todoItem) ? todoItem : ([] as TodoItem[]).concat(todoItem),
   };
 });
 

@@ -1,10 +1,12 @@
 import { fetchTodo, createTodo, updateTodo, patchTodo, deleteTodo } from "..";
+import { TodoItem } from "../../types";
 
 describe('async api test', () => {
   it('shoud async get api to todos a states', async () => {
-    const { data } = await fetchTodo();
+    const { data } = await fetchTodo(undefined);
+    const todoItem = Array.isArray(data) ? data[0] : data;
     const keys = ['userId', 'id', 'title', 'completed'];
-    expect(Object.keys(data[0])).toEqual(keys);
+    expect(Object.keys(todoItem)).toEqual(keys);
   });
 
   it('shoud async get api to todo a states', async () => {
@@ -14,10 +16,10 @@ describe('async api test', () => {
   });
 
   it('shoud async create api to todos a states', async () => {
-    const expectData = {
+    const expectData: TodoItem = {
       "userId": 1,
       "title": 'create',
-      "body": 'post create'
+      "completed": true,
     };
     const { data, status } = await createTodo(expectData);
 
@@ -25,7 +27,7 @@ describe('async api test', () => {
     expect({
       userId: data.userId,
       title: data.title,
-      body: data.body,
+      completed: data.completed,
     }).toEqual(expectData);
   });
 
@@ -34,7 +36,7 @@ describe('async api test', () => {
       'userId': 1,
       'id': 1,
       'title': 'update',
-      'body': 'put update'
+      'completed': true
     };
 
     const { data, status } = await updateTodo(1, expectData);
@@ -46,6 +48,8 @@ describe('async api test', () => {
   it('shoud async patch api to todos a states', async () => {
     const expectData = {
       'title': 'patch',
+      'userId': 1,
+      'completed': true,
     };
 
     const { data, status } = await patchTodo(1, expectData);

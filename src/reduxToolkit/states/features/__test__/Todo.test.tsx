@@ -1,7 +1,7 @@
 import thunk from "redux-thunk";
-import configureStore from "redux-mock-store";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
+import createMockStore from "redux-mock-store";
 
 import {
   FETCH_TODO,
@@ -21,7 +21,8 @@ import reducer, {
   deleteTodoAction,
 } from "../";
 
-import { TodoItemState } from '../../types';
+import { TodoAction, TodoItemState, TodoState, TypedThunkDispath } from '../../types';
+import { TodoItem } from "../../../types";
 
 describe("action creator test", () => {
   it("shoud fetch an action to todo a states", () => {
@@ -107,7 +108,7 @@ describe("action creator test", () => {
 });
 
 const middlewares = [thunk];
-const mockStore = configureStore(middlewares);
+const mockStore = createMockStore<TodoState, TypedThunkDispath>(middlewares);
 const mock = new MockAdapter(axios);
 
 describe("async actions test", () => {
@@ -135,11 +136,9 @@ describe("async actions test", () => {
 
     return store.dispatch(fetchAsyncTodoAction()).then(() => {
       // return of async actions
-      // [0]: pending, [1]: FETCH_TODO, [2]: fulfilled
+      // [0]: pending, [1]: fulfilled
       const responses = store.getActions();
-      const fetchAction = responses.filter(
-        (item) => item.type === FETCH_TODO
-      )[0];
+      const fetchAction = responses.filter((item) => item.type === fetchAsyncTodoAction.fulfilled.type)[0];
 
       expect(fetchAction.payload.todoItem).toHaveLength(todoItem.length);
     });
@@ -164,20 +163,17 @@ describe("async actions test", () => {
 
     return store.dispatch(fetchAsyncTodoAction(id)).then(() => {
       // return of async actions
-      // [0]: pending, [1]: FETCH_TODO, [2]: fulfilled
+      // [0]: pending, [1]: fulfilled
       const expectedActions = {
-        type: FETCH_TODO,
-        payload: {
-          todoItem,
-        },
+        todoItem,
       };
 
       const responses = store.getActions();
       const fetchAction = responses.filter(
-        (item) => item.type === FETCH_TODO
+        (item) => item.type === fetchAsyncTodoAction.fulfilled.type
       )[0];
 
-      expect(fetchAction).toEqual(expectedActions);
+      expect(fetchAction.payload).toEqual(expectedActions);
     });
   });
 
@@ -186,7 +182,7 @@ describe("async actions test", () => {
       {
         userId: 2,
         title: "create",
-        body: "post create",
+        completed: true,
       },
     ];
 
@@ -196,22 +192,19 @@ describe("async actions test", () => {
       .onPost(`https://jsonplaceholder.typicode.com/posts`)
       .reply(201, todoItem);
 
-    return store.dispatch(createAsyncTodoAction(todoItem[0])).then(() => {
+    return store.dispatch(createAsyncTodoAction(todoItem[0] as TodoItem)).then(() => {
       // return of async actions
-      // [0]: pending, [1]: CREATE_TODO, [2]: fulfilled
+      // [0]: pending, [1]: fulfilled
       const expectedActions = {
-        type: CREATE_TODO,
-        payload: {
-          todoItem,
-        },
+        todoItem,
       };
 
       const responses = store.getActions();
-      const fetchAction = responses.filter(
-        (item) => item.type === CREATE_TODO
+      const action = responses.filter(
+        (item) => item.type === createAsyncTodoAction.fulfilled.type
       )[0];
 
-      expect(fetchAction).toEqual(expectedActions);
+      expect(action.payload).toEqual(expectedActions);
     });
   });
 
@@ -221,16 +214,10 @@ describe("async actions test", () => {
       userId: id,
       id: id,
       title: "update",
-      body: "put update",
+      completed: true,
     };
 
-    const store = mockStore({
-      userId: 1,
-      id: 1,
-      title:
-        "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-      body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto",
-    });
+    const store = mockStore();
 
     mock
       .onPut(`https://jsonplaceholder.typicode.com/posts/${id}`)
@@ -245,34 +232,25 @@ describe("async actions test", () => {
       )
       .then(() => {
         // return of async actions
-        // [0]: pending, [1]: UPDATE_TODO, [2]: fulfilled
+        // [0]: pending, [1]: fulfilled
         const expectedActions = {
-          type: UPDATE_TODO,
-          payload: {
-            id,
-            todoItem,
-          },
+          id,
+          data: todoItem
         };
 
         const responses = store.getActions();
-        const fetchAction = responses.filter(
-          (item) => item.type === UPDATE_TODO
+        const action = responses.filter(
+          (item) => item.type === updateAsyncTodoAction.fulfilled.type
         )[0];
 
-        expect(fetchAction).toEqual(expectedActions);
+        expect(action.payload).toEqual(expectedActions);
       });
   });
 
   it("shoud async delete action to todo a states", async () => {
     const id = 1;
 
-    const store = mockStore({
-      userId: 1,
-      id: 1,
-      title:
-        "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-      body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto",
-    });
+    const store = mockStore();
 
     mock
       .onDelete(`https://jsonplaceholder.typicode.com/posts/${id}`)
@@ -280,21 +258,25 @@ describe("async actions test", () => {
 
     return store.dispatch(deleteAsyncTodoAction(id)).then(() => {
       // return of async actions
-      // [0]: pending, [1]: DELETE_TODO, [2]: fulfilled
+      // [0]: pending, [1]: fulfilled
 
       const responses = store.getActions();
-      const fetchAction = responses.filter(
-        (item) => item.type === DELETE_TODO
+      const action = responses.filter(
+        (item) => item.type === deleteAsyncTodoAction.fulfilled.type
       )[0];
 
-      expect(fetchAction.payload).toBe(id);
+      const expectedActions = {
+        id,
+      };
+
+      expect(action.payload).toEqual(expectedActions);
     });
   });
 });
 
 describe("reducer test", () => {
   it("should return the initial state", () => {
-    expect(reducer(undefined, {})).toEqual({
+    expect(reducer(undefined, {} as TodoAction)).toEqual({
       todoItem: [],
       loading: false,
       message: "",
@@ -352,7 +334,7 @@ describe("reducer test", () => {
           id: 1,
           title:
             "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-          body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto",
+          completed: true,
         })
       )
     ).toEqual({
@@ -362,7 +344,7 @@ describe("reducer test", () => {
           id: 1,
           title:
             "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-          body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto",
+          completed: true,
         },
       ],
       loading: false,
@@ -380,7 +362,7 @@ describe("reducer test", () => {
               id: 1,
               title:
                 "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-              body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto",
+              completed: false,
             },
           ],
           loading: false,
@@ -390,7 +372,7 @@ describe("reducer test", () => {
           id: 1,
           userId: 1,
           title: "update title",
-          body: "update body",
+          completed: false,
         })
       )
     ).toEqual({
@@ -399,7 +381,7 @@ describe("reducer test", () => {
           userId: 1,
           id: 1,
           title: "update title",
-          body: "update body",
+          completed: false,
         },
       ],
       loading: false,
