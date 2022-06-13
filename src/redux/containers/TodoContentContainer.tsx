@@ -1,9 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch, shallowEqual, connect } from "react-redux";
-import ReactLoading from 'react-loading';
+import ReactLoading from "react-loading";
 
 import TodosContentItemComponent from "../components/TodosContentItemComponent";
-import { TypedThunkDispath, RootState, RootDispatch, TodoState } from '../states/store/types';
+import {
+  TypedThunkDispath,
+  RootState,
+  RootDispatch,
+  TodoState,
+} from "../states/store/types";
 import { fetchAsyncTodoAction } from "../states/actions";
 import { getTodoItemLengthState } from "../states/selectors";
 
@@ -16,19 +21,22 @@ const TodoContentContainer = (props: RootState) => {
   //   }),
   //   shallowEqual
   // );
-  const { todoItem, loading, message }: TodoState = useSelector((state: RootState) => props.todos, shallowEqual);
+  const { todoItem, loading }: TodoState = useSelector(
+    (state: RootState) => props.todos,
+    shallowEqual
+  );
   const todoLength = useSelector(getTodoItemLengthState);
   const dispatch = useDispatch<RootDispatch>();
-  const [ fetchNumber, setFetchNumber ] = useState(1);
-  const [ updateNumber, setUpdateNumber ] = useState(1);
-  const [ deleteNumber, setDeleteNumber ] = useState(1);
+  const [fetchNumber, setFetchNumber] = useState(1);
 
   useEffect(() => {
     (dispatch as TypedThunkDispath)(fetchAsyncTodoAction(undefined));
   }, [dispatch]);
 
-  const handleFetchTodosAction = (event: React.MouseEvent<HTMLButtonElement>) => (dispatch as TypedThunkDispath)(fetchAsyncTodoAction(undefined));
-  const handleFetchTodoAction = (evetn: React.MouseEvent<HTMLButtonElement>) => (dispatch as TypedThunkDispath)(fetchAsyncTodoAction(fetchNumber));
+  const handleFetchTodosAction = (event: React.MouseEvent<HTMLButtonElement>) =>
+    (dispatch as TypedThunkDispath)(fetchAsyncTodoAction(undefined));
+  const handleFetchTodoAction = (evetn: React.MouseEvent<HTMLButtonElement>) =>
+    (dispatch as TypedThunkDispath)(fetchAsyncTodoAction(fetchNumber));
   // const handleCreateTodoAction = (event: React.MouseEvent<HTMLButtonElement>) => dispatch(createAsyncTodoAction({
   //   'userId': 2,
   //   'title': 'create',
@@ -44,11 +52,14 @@ const TodoContentContainer = (props: RootState) => {
   //   },
   // }));
   // const handleDeteleTodoAciton = (event: React.MouseEvent<HTMLButtonElement>) => dispatch(deleteAsyncTodoAction(deleteNumber));
-  
-  const onFetchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const { target } = e;
-    setFetchNumber(Number(target.value));
-  }, []);
+
+  const onFetchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { target } = e;
+      setFetchNumber(Number(target.value));
+    },
+    []
+  );
 
   // const onUpdateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
   //   const { target } = e;
@@ -62,27 +73,36 @@ const TodoContentContainer = (props: RootState) => {
 
   return (
     <>
-      {
-        loading && <ReactLoading color={'#00b2b2'} height={50} width={50} />
-      }
+      {loading && <ReactLoading color={"#00b2b2"} height={50} width={50} />}
       <div>길이: {todoLength}</div>
       <div>
-        <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodosAction}>Todos All Loading</button>
+        <button
+          style={{ background: "#e7f9f9" }}
+          onClick={handleFetchTodosAction}
+        >
+          Todos All Loading
+        </button>
       </div>
-      <hr 
+      <hr
         style={{
-          margin: '3px',
-          border: '1px solid black',
+          margin: "3px",
+          border: "1px solid black",
         }}
       />
-      <label>Todo Fetch : </label><input type="number" value={fetchNumber} onChange={onFetchChange} />
+      <label>Todo Fetch : </label>
+      <input type="number" value={fetchNumber} onChange={onFetchChange} />
       <div>
-        <button style={{ background: '#e7f9f9' }} onClick={handleFetchTodoAction}>Todo Loading</button>
+        <button
+          style={{ background: "#e7f9f9" }}
+          onClick={handleFetchTodoAction}
+        >
+          Todo Loading
+        </button>
       </div>
-      <hr 
+      <hr
         style={{
-          margin: '3px',
-          border: '1px solid black',
+          margin: "3px",
+          border: "1px solid black",
         }}
       />
       {/* <div>
@@ -108,21 +128,26 @@ const TodoContentContainer = (props: RootState) => {
       <div>
         <button style={{ background: '#e7f9f9' }} onClick={handleDeteleTodoAciton}>Delete Todo</button>
       </div> */}
-      {
-        (!loading && todoItem) && todoItem.map(
-          todo => 
-            <TodosContentItemComponent
-              key={todo.id}
-              id={todo.id}
-              userId={todo.userId}
-              title={todo.title}
-              completed={todo.completed}
-          />)
-      }
+      {!loading &&
+        todoItem &&
+        todoItem.map((todo) => (
+          <TodosContentItemComponent
+            key={todo.id}
+            id={todo.id}
+            userId={todo.userId}
+            title={todo.title}
+            completed={todo.completed}
+          />
+        ))}
     </>
   );
 };
 
 const mapStateToProps = (state: RootState) => state;
 
-export default connect(mapStateToProps)(React.memo(TodoContentContainer, (prev: RootState, curr: RootState) => prev.todos === curr.todos));
+export default connect(mapStateToProps)(
+  React.memo(
+    TodoContentContainer,
+    (prev: RootState, curr: RootState) => prev.todos === curr.todos
+  )
+);

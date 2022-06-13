@@ -1,5 +1,7 @@
-import todos from './todos'
+import todos from "./todos";
 
-export default {
+const stores = {
   todos,
 };
+
+export default stores;

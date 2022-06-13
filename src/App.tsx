@@ -1,13 +1,14 @@
-import React from 'react';
-import { NavLink, Route, Switch, Redirect } from 'react-router-dom';
-import ReduxToolKitContainer from '../src/reduxToolkit/containers/RootContainer';
-import RecoilContainer from '../src/recoil/containers/RootContainer';
-import ReactQueryContainer from '../src/react-query/containers/RootContainer';
-import SWRContainer from '../src/swr/containers/RootContainer';
-import ReduxContainer from '../src/redux/containers/RootContainer';
-import MobxContainer from '../src/mobx/containers/RootContainer';
+import React from "react";
+import { NavLink, Route, Switch, Redirect } from "react-router-dom";
+import ReduxToolKitContainer from "../src/reduxToolkit/containers/RootContainer";
+import RecoilContainer from "../src/recoil/containers/RootContainer";
+import ReactQueryContainer from "../src/react-query/containers/RootContainer";
+import SWRContainer from "../src/swr/containers/RootContainer";
+import ReduxContainer from "../src/redux/containers/RootContainer";
+import MobxContainer from "../src/mobx/containers/RootContainer";
+import JotaiContainer from "../src/jotai/containers/RootContainer";
 
-import './App.css';
+import "./App.css";
 
 function App() {
   return (
@@ -31,6 +32,9 @@ function App() {
         <div>
           <NavLink to="swr">swr</NavLink>
         </div>
+        <div>
+          <NavLink to="jotai">jotai</NavLink>
+        </div>
       </div>
       <div className="content">
         <Switch>
@@ -40,6 +44,7 @@ function App() {
           <Route path="/recoil" component={RecoilContainer} />
           <Route path="/react-query" component={ReactQueryContainer} />
           <Route path="/swr" component={SWRContainer} />
+          <Route path="/jotai" component={JotaiContainer} />
           <Redirect from="/" to="/reduxToolkit" />
         </Switch>
       </div>

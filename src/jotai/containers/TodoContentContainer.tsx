@@ -1,10 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  useRecoilCallback,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from "recoil";
+import { useAtom } from "jotai";
+import { useAtomValue, useUpdateAtom } from "jotai/utils";
 import {
   TodoItemAtom,
   fetchAsyncTodoAction,
@@ -14,6 +10,7 @@ import {
   todoListFilterState,
   updateAsyncTodoAction,
   todoItemLengthState,
+  fetchAsyncJotaiWithReactQueryTodoAction,
 } from "../states/atoms";
 import TodosContentItemComponent from "../components/TodosContentItemComponent";
 import {
@@ -26,16 +23,19 @@ import {
 import { TodoItem } from "../types";
 
 const TodoContentContainer = () => {
-  const [{ data: todoItems }, setTodoItemAtom] = useRecoilState(TodoItemAtom);
-  const [filter, setTodoFilter] = useRecoilState(todoListFilterState);
-  const filterItems = useRecoilValue(filteredTodoListState);
+  const [{ data: todoItems }, setTodoItemAtom] = useAtom(TodoItemAtom);
+  const [filter, setTodoFilter] = useAtom(todoListFilterState);
+  const filterItems = useAtomValue(filteredTodoListState);
+  const todoItemsWithReactQuery = useAtomValue<TodoItem[]>(
+    fetchAsyncJotaiWithReactQueryTodoAction
+  );
 
-  const fetchTodoAction = useSetRecoilState(fetchAsyncTodoAction);
-  const createTodoAction = useSetRecoilState(createAsyncTodoAction);
-  const updateTodoAction = useSetRecoilState(updateAsyncTodoAction);
-  const deleteTodoAction = useSetRecoilState(deleteAsyncTodoAction);
+  const fetchTodoAction = useUpdateAtom(fetchAsyncTodoAction);
+  const [, createTodoAction] = useAtom(createAsyncTodoAction);
+  const [, updateTodoAction] = useAtom(updateAsyncTodoAction);
+  const [, deleteTodoAction] = useAtom(deleteAsyncTodoAction);
 
-  const todoLength = useRecoilValue(todoItemLengthState);
+  const todoLength = useAtom<number>(todoItemLengthState);
 
   const [fetchNumber, setFetchNumber] = useState(1);
   const [updateNumber, setUpdateNumber] = useState(1);
@@ -78,21 +78,6 @@ const TodoContentContainer = () => {
   ) => {
     setTodoFilter("FETCH_TODOS");
   };
-
-  const handleCallbackFetchTodoAction = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async () => {
-        const todos = (await snapshot.getPromise(
-          fetchAsyncTodoAction
-        )) as TodoItem[];
-
-        set(TodoItemAtom, (prev) => ({
-          ...prev,
-          data: todos,
-        }));
-      },
-    [fetchNumber, fetchAsyncTodoAction, TodoItemAtom, fetchTodoAction]
-  );
 
   const handleFetchTodoAction = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -185,14 +170,6 @@ const TodoContentContainer = () => {
           Todo Loading
         </button>
       </div>
-      <div>
-        <button
-          style={{ background: "#e7f9f9" }}
-          onClick={handleCallbackFetchTodoAction}
-        >
-          Todo Callback Loading
-        </button>
-      </div>
       <hr
         style={{
           margin: "3px",
@@ -241,6 +218,22 @@ const TodoContentContainer = () => {
       </div>
       {todoItems &&
         todoItems.map((todo) => (
+          <TodosContentItemComponent
+            key={todo.id}
+            id={todo.id}
+            userId={todo.userId}
+            title={todo.title}
+            completed={todo.completed}
+          />
+        ))}
+      <hr
+        style={{
+          margin: "3px",
+          border: "1px solid black",
+        }}
+      />
+      {todoItemsWithReactQuery &&
+        todoItemsWithReactQuery.map((todo) => (
           <TodosContentItemComponent
             key={todo.id}
             id={todo.id}
