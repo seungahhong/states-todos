@@ -59,6 +59,7 @@ This software uses the following open source packages:
 - [typescript](https://www.typescriptlang.org/)
 - [axios](https://github.com/axios/axios)
 - [jest](https://jestjs.io/)
+- [jotai](https://jotai.org/)
 
 ## Support
 
