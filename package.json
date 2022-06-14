@@ -15,6 +15,7 @@
     "@types/react-router-dom": "^5.3.2",
     "@types/redux-logger": "^3.0.9",
     "axios": "^0.21.4",
+    "gh-pages": "^4.0.0",
     "immer": "^9.0.7",
     "jotai": "^1.7.2",
     "mobx": "^6.3.10",
@@ -42,6 +43,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -66,5 +69,6 @@
     "@types/redux-mock-store": "^1.0.3",
     "axios-mock-adapter": "^1.20.0",
     "redux-mock-store": "^1.5.4"
-  }
+  },
+  "homepage": "http://seungahhong.github.io/states-todos"
 }
