@@ -7,6 +7,7 @@ import SWRContainer from "../src/swr/containers/RootContainer";
 import ReduxContainer from "../src/redux/containers/RootContainer";
 import MobxContainer from "../src/mobx/containers/RootContainer";
 import JotaiContainer from "../src/jotai/containers/RootContainer";
+import ZustandContainer from "../src/zustand/containers/RootContainer";
 
 import "./App.css";
 
@@ -35,6 +36,9 @@ function App() {
         <div>
           <NavLink to="jotai">jotai</NavLink>
         </div>
+        <div>
+          <NavLink to="zustand">zustand</NavLink>
+        </div>
       </div>
       <div className="content">
         <Switch>
@@ -45,6 +49,7 @@ function App() {
           <Route path="/react-query" component={ReactQueryContainer} />
           <Route path="/swr" component={SWRContainer} />
           <Route path="/jotai" component={JotaiContainer} />
+          <Route path="/zustand" component={ZustandContainer} />
           <Redirect from="/" to="/reduxToolkit" />
         </Switch>
       </div>
